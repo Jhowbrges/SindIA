@@ -24,7 +24,7 @@
             appendMessage('user-message', userMessage);
             userInput.value = '';
 
-            const response = await fetch('/openai-cookbook/api.php', {
+            const response = await fetch('/api/api.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userMessage })
