@@ -48,15 +48,13 @@ $api_data = array(
 );
 
 $options = array(
-    CURLOPT_URL => $api_url,
-    CURLOPT_HTTPHEADER => array(
-        "Content-type: application/json",
-        "Authorization: Bearer " . $api_key
-    ),
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POST => true,
-    CURLOPT_POSTFIELDS => json_encode($api_data)
+    'http' => array(
+        'method' => 'POST',
+        'header' => "Content-type: application/json\r\nAuthorization: Bearer $api_key",
+        'content' => json_encode($api_data)
+    )
 );
+
 
 
 $ch = curl_init();
