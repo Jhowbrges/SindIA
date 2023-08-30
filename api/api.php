@@ -1,7 +1,7 @@
 <?php
 
 // Dados da API do ChatGPT
-$apiKey = getenv('OPENAI_API_KEY');
+$apiKey = $_ENV['OPENAI_API_KEY'];
 $api_url = 'https://api.openai.com/v1/chat/completions';
 
 // Obter a mensagem do usuário do corpo da requisição
