@@ -41,19 +41,35 @@ $messages = array(
     array('role' => 'user', 'content' => $userMessage)
 );
 
-// Montar os dados para a chamada à API
 $api_data = array(
     'model' => 'gpt-3.5-turbo',
     'messages' => $messages
 );
 
 $options = array(
-    'http' => array(
-        'header'  => "Content-type: application/json\r\nAuthorization: Bearer $api_key",
-        'method'  => 'POST',
-        'content' => json_encode($api_data)
-    )
+    CURLOPT_URL => $api_url,
+    CURLOPT_HTTPHEADER => array(
+        "Content-type: application/json",
+        "Authorization: Bearer $api_key"
+    ),
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => json_encode($api_data)
 );
+
+$ch = curl_init();
+curl_setopt_array($ch, $options);
+
+$response = curl_exec($ch);
+
+if ($response === false) {
+    // Lida com o erro de solicitação cURL
+    echo "Erro na solicitação cURL: " . curl_error($ch);
+}
+
+curl_close($ch);
+
+$result = json_decode($response, true);
 
 function searchConvention($userMessage) {
     // Adiciona regras de convenção coletiva do cond.
