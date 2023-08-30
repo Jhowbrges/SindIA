@@ -3,16 +3,12 @@
 // Dados da API do ChatGPT
 putenv("OPENAI_API_KEY=$_ENV[OPENAI_API_KEY]");
 $api_key = $_ENV['OPENAI_API_KEY'];
-echo "API Key: $api_key";
 $api_url = 'https://api.openai.com/v1/chat/completions';
 
 // Obter a mensagem do usuário do corpo da requisição
 $request_body = file_get_contents('php://input');
 $data = json_decode($request_body, true);
 $userMessage = $data['userMessage'];
-$roles_file = 'roles.json';
-$roles_data = file_get_contents($roles_file);
-$roles = json_decode($roles_data, true);
 
 // Montar a estrutura da conversa
 $messages = array(
@@ -44,15 +40,6 @@ $messages = array(
 '),
     array('role' => 'user', 'content' => $userMessage)
 );
-/*
-$messages = array();
-
-foreach ($roles as $role_data) {
-    $role = $role_data['role'];
-    $content = $role_data['content'];
-    $messages[] = array('role' => $role, 'content' => $content);
-}
-*/
 
 // Montar os dados para a chamada à API
 $api_data = array(
