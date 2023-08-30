@@ -4,6 +4,7 @@
 putenv("OPENAI_API_KEY=$_ENV[OPENAI_API_KEY]");
 $api_key = $_ENV['OPENAI_API_KEY'];
 echo"$api_key";
+$ch = curl_init();
 $api_url = 'https://api.openai.com/v1/chat/completions';
 
 // Obter a mensagem do usuário do corpo da requisição
@@ -45,16 +46,38 @@ $messages = array(
 // Montar os dados para a chamada à API
 $api_data = array(
     'model' => 'gpt-3.5-turbo',
+    'max_tokens' => 4000,
+    'frequency_penalty' => 0,
     'messages' => $messages
 );
 
-$options = array(
-    'http' => array(
-        'header'  => "Content-type: application/json\r\nAuthorization: Bearer $api_key",
-        'method'  => 'POST',
-        'content' => json_encode($api_data)
-    )
+$headers = array(
+    "Content-type: application/json",
+    "Authorization: Bearer " . $api_key
 );
+
+$options = array(
+    CURLOPT_URL            => $api_url,
+    CURLOPT_POST           => true,
+    CURLOPT_POSTFIELDS     => json_encode($api_data),
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER     => $headers,
+);
+
+// Configure as opções para o manipulador cURL
+curl_setopt_array($ch, $options);
+
+// Execute a solicitação cURL
+$response = curl_exec($ch);
+
+// Trate erros da solicitação cURL
+if ($response === false) {
+    echo "Erro na solicitação cURL: " . curl_error($ch);
+}
+
+// Encerre o manipulador cURL
+curl_close($ch);
+
 
 function searchConvention($userMessage) {
     // Adiciona regras de convenção coletiva do cond.
@@ -74,11 +97,11 @@ function searchConvention($userMessage) {
 
 $context = stream_context_create($options);
 $response = file_get_contents($api_url, false, $context);
-$result = json_decode($response, true);
+//$result = json_decode($response, true);
 
 // Extrair a resposta do chatbot
-$chatbotReply = $result['choices'][0]['message']['content'];
-$chatbotReply = nl2br($chatbotReply);
+//$chatbotReply = $result['choices'][0]['message']['content'];
+//$chatbotReply = nl2br($chatbotReply);
 
 // Verificar se a mensagem do usuário está relacionada à convenção coletiva
 $relatedConventionInfo = searchConvention(strtolower($userMessage));
