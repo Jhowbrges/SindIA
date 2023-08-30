@@ -3,7 +3,6 @@
 // Dados da API do ChatGPT
 putenv("OPENAI_API_KEY=$_ENV[OPENAI_API_KEY]");
 $api_key = $_ENV['OPENAI_API_KEY'];
-echo "$api_key";
 $api_url = 'https://api.openai.com/v1/chat/completions';
 
 // Obter a mensagem do usuário do corpo da requisição
@@ -42,6 +41,7 @@ $messages = array(
     array('role' => 'user', 'content' => $userMessage)
 );
 
+// Montar os dados para a chamada à API
 $api_data = array(
     'model' => 'gpt-3.5-turbo',
     'messages' => $messages
@@ -49,27 +49,11 @@ $api_data = array(
 
 $options = array(
     'http' => array(
-        'method' => 'POST',
-        'header' => "Content-type: application/json\r\nAuthorization: Bearer $api_key",
+        'header'  => "Content-type: application/json\r\nAuthorization: Bearer $api_key",
+        'method'  => 'POST',
         'content' => json_encode($api_data)
     )
 );
-
-
-
-$ch = curl_init();
-curl_setopt_array($ch, $options);
-
-$response = curl_exec($ch);
-
-if ($response === false) {
-    // Lida com o erro de solicitação cURL
-    echo "Erro na solicitação cURL: " . curl_error($ch);
-}
-
-curl_close($ch);
-
-$result = json_decode($response, true);
 
 function searchConvention($userMessage) {
     // Adiciona regras de convenção coletiva do cond.
