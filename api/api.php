@@ -11,6 +11,28 @@ $request_body = file_get_contents('php://input');
 $data = json_decode($request_body, true);
 $userMessage = $data['userMessage'];
 
+$requests_per_minute = 5; // Defina o número máximo de solicitações por minuto
+
+// Função para verificar se você atingiu o limite de solicitações
+function checkRateLimit($requests_per_minute) {
+    $timestamp_file = 'timestamp.txt';
+    $current_timestamp = time();
+
+    if (!file_exists($timestamp_file)) {
+        file_put_contents($timestamp_file, $current_timestamp);
+        return true;
+    }
+
+    $previous_timestamp = intval(file_get_contents($timestamp_file));
+
+    if ($current_timestamp - $previous_timestamp >= 60) {
+        file_put_contents($timestamp_file, $current_timestamp);
+        return true;
+    }
+
+    return false;
+}
+
 // Montar a estrutura da conversa
 $messages = array(
     array('role' => 'system', 'content' => 'Na primeira mensagem, você se apresenta. Você é um chatbot chamado SindIA (junção de sindico com IA) que ajuda com dúvidas de administração condominial. Somente responda mensagens relacionadas ao tema.
@@ -74,6 +96,11 @@ function searchConvention($userMessage) {
 
 $context = stream_context_create($options);
 $response = file_get_contents($api_url, false, $context);
+ 
+// Verificação e tratamento de erros
+ if ($response === false) {
+    echo "Erro na solicitação cURL: " . curl_error($ch);
+}
 $result = json_decode($response, true);
 
 // Extrair a resposta do chatbot
